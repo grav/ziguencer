@@ -18,7 +18,7 @@ it is much more hackable than proprietary hardware sequencers. New features and 
 As a programmer spoiled with the luxury of garbage collectors, Ziguencer is also a great way for me to understand the low-level details of programming, 
 with fewer footguns than C, and a couple of awesome features as a bonus. For instance Ziguencer already leverages:
 - easy integration with cross-platform C libraries ([PortMidi](https://github.com/PortMidi/portmidi))
-- compilation to another target platform (ARM linux)
+- compilation to another target platform (From Mac to ARM linux on Raspberry Pi)
 
 ## Features
 
