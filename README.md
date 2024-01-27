@@ -23,8 +23,46 @@ with fewer footguns than C, and a couple of awesome features as a bonus. For ins
 ## Features
 
 - Pattern-based sequencing (Ableton Live-like)
-- Launchpad UI for viewing and editing
+- [Launchpad](https://novationmusic.com/launch) UI for viewing and editing
 
 ## Future plans
 - Support for LED display on Raspberry PI
 - Integration with multiple MIDI devices
+
+## Usage
+
+### Prerequisites
+The libraries `portmidi` and `notcurses` need to be installed and available.
+
+Usually it's a matter of running `brew install portmidi notcurses` or similar on your platform.
+
+### Starting
+
+First build the binary:
+
+```bash
+zig build
+```
+
+The run it:
+```bash
+./zig-out/bin/ziguencer 
+```
+The program should you a list of available midi devices and exit. 
+
+You can then start the program specifying devices:
+
+```bash
+./zig-out/bin/ziguencer --out [device name/number] (--in [device name/number]) (--launchpad auto)
+```
+
+Example:
+```
+./zig-out/bin/ziguencer --out fluidsynth --launchpad auto
+```
+
+The `--out` parameter is mandatory. 
+
+### Using
+
+TODO 
