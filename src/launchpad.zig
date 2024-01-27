@@ -76,7 +76,7 @@ pub fn seqStateToMatrixMessages(messages: *[nCells]pm.PmMessage, seq: *midilib.S
             const patNum = @divTrunc(idx, 8) - 1;
             if (track.*.patterns.len > patNum) {
                 const p = track.*.patterns[patNum];
-                messages[idx] = if (p == track.currentPattern) ColorGreenFull else (if (p == track.nextPattern and track.currentPattern != track.nextPattern) ColorGreenMed else ColorGreenLow);
+                messages[idx] = if (p == track.currentPattern) ColorGreenFull else (if (p == track.nextPattern and track.currentPattern != track.nextPattern) ColorYellowMed else ColorGreenLow);
             } else {
                 messages[idx] = ColorNone;
             }

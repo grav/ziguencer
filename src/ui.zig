@@ -91,7 +91,6 @@ pub fn updateLaunchpad(seq: *midilib.Sequencer, launchpad: *lp.Launchpad) void {
         lp.ColorNone,
         lp.ColorNone,
         lp.ColorNone,
-        // weird - ColorNone doesn't seem to change anything
         if (launchpad.ctrlPressed(lp.Ctrl.mixer)) lp.ColorRedFull else lp.ColorOrange,
         lp.ColorNone,
         lp.ColorNone,
