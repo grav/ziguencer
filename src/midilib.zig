@@ -242,7 +242,7 @@ fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.C) vo
                         t.setNextPattern(pp);
                     },
                     .StepToggle => {
-                        std.debug.print("{}\n", .{msg});
+                        // std.debug.print("{}\n", .{msg});
                         const t = metro.tracks[msg.trackNumber];
                         var es = t.currentPattern.events;
                         const notes = note(metro.midiPPQ, t.channel, msg.note, 127, msg.tick, 1);
@@ -256,10 +256,11 @@ fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.C) vo
                         if (found) |i| {
                             // remove
                             // TODO - remove note off as well!
-                            std.debug.print("found!\n", .{});
+                            // std.debug.print("found!\n", .{});
                             // _ = es.swapRemove(i + 1);
                             const x = es.swapRemove(i);
-                            std.debug.print("remove: {}\n", .{x});
+                            _ = x;
+                            // std.debug.print("remove: {}\n", .{x});
                         } else {
                             // add
                             t.currentPattern.events.append(notes[0]) catch unreachable;

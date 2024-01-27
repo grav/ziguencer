@@ -297,7 +297,7 @@ pub const Launchpad = struct {
                 // scroll to lowest note
                 var p = seq.*.tracks[self.uiState.currentTrack].currentPattern;
                 if (p.lowNote()) |l| {
-                    std.debug.print("0x{x:0>6}, {d}\n", .{ l, (l & 0x00FF00) >> 8 });
+                    // std.debug.print("0x{x:0>6}, {d}\n", .{ l, (l & 0x00FF00) >> 8 });
                     self.uiState.yOffset = @intCast((l & 0x00FF00) >> 8);
                 }
             } else if (self.ctrlPressed(.arrowLeft) and (self.ctrlPressed(.arrowRight))) {
@@ -327,7 +327,7 @@ pub const Launchpad = struct {
                     _ = pm.Pm_Enqueue(seq.mainToMidi, &seqMsg2);
                 }
             } else {
-                std.debug.print("row: {d}, col: {d}\n", .{ rowFromKey(k), colFromKey(k) });
+                // std.debug.print("row: {d}, col: {d}\n", .{ rowFromKey(k), colFromKey(k) });
                 var seqMsg = midilib.Msg{
                     //std
                     .type = .StepToggle,
@@ -338,7 +338,7 @@ pub const Launchpad = struct {
                 _ = pm.Pm_Enqueue(seq.mainToMidi, &seqMsg);
             }
         }
-        std.debug.print("ui: {}\n", .{self.uiState});
+        // std.debug.print("ui: {}\n", .{self.uiState});
     }
 };
 
