@@ -55,7 +55,7 @@ pub fn main() !void {
     if (argsMap.get("--look-ahead")) |v| {
         metro.lookAheadMs = std.fmt.parseInt(i32, v, 10) catch {
             std.debug.print("Error: Unable to parse '{s}' as integer for look-ahead!\n", .{v});
-            std.os.exit(1);
+            std.process.exit(1);
         };
     } else {
         metro.lookAheadMs = 100;
@@ -68,7 +68,7 @@ pub fn main() !void {
     }
     if (out == -1) {
         std.debug.print("Error: need to specify output device name/number with `--out [name/number]`!\n", .{});
-        std.os.exit(1);
+        std.process.exit(1);
     }
 
     std.debug.print("Using look-ahead: {d} ms\n", .{metro.lookAheadMs});
@@ -85,7 +85,7 @@ pub fn main() !void {
     if (argsMap.get("--launchpad-out")) |v| {
         lpOut = std.fmt.parseInt(i32, v, 10) catch {
             std.debug.print("Error: unable to parse '{s}' as integer for launchpad output!\n", .{v});
-            std.os.exit(1);
+            std.process.exit(1);
         };
     }
 
@@ -93,7 +93,7 @@ pub fn main() !void {
     if (argsMap.get("--launchpad-in")) |v| {
         lpIn = std.fmt.parseInt(i32, v, 10) catch {
             std.debug.print("Error: unable to parse '{s}' as integer for launchpad input!\n", .{v});
-            std.os.exit(1);
+            std.process.exit(1);
         };
     }
     if (argsMap.get("--launchpad")) |s| {
@@ -167,14 +167,14 @@ pub fn main() !void {
     _ = pm.Pm_OpenOutput(&(metro.midiOut), out, null, 0, null, null, latency);
     if (metro.midiOut == null) {
         std.debug.print("Failed to start midi!\n", .{});
-        std.os.exit(1);
+        std.process.exit(1);
     }
     defer _ = pm.Pm_Close(metro.midiOut);
     if (in >= 0) {
         _ = pm.Pm_OpenInput(&(metro.midiIn), in, null, 0, null, null);
         if (metro.midiIn == null) {
             std.debug.print("Failed to start midi!\n", .{});
-            std.os.exit(1);
+            std.process.exit(1);
         }
     }
     defer _ = pm.Pm_Close(metro.midiIn);

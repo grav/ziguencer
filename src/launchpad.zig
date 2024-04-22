@@ -153,7 +153,7 @@ pub const Launchpad = struct {
         if (lp.midiOutput == null) {
             // TODO - handle more gracefully!
             std.debug.print("Launchpad: Failed to start midi!\n", .{});
-            std.os.exit(1);
+            std.process.exit(1);
         }
         lp.keyMap = std.AutoHashMap(pm.PmMessage, bool).init(allocator);
 
