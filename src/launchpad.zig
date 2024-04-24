@@ -208,8 +208,9 @@ pub const Launchpad = struct {
                 }
             }
         }
-
-        _ = pm.Pm_Write(self.midiOutput, &msgs, @intCast(j));
+        if (j > 0) {
+            _ = pm.Pm_Write(self.midiOutput, &msgs, @intCast(j));
+        }
         return j;
     }
 
