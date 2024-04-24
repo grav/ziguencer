@@ -80,6 +80,10 @@ pub const melody = [_]midilib.RelNote{
     relNote(37 + 24, 80, 10, 1),
 };
 
+pub const singleNote = [_]midilib.RelNote{
+    relNote(27 + 24, 100, 0, 1),
+};
+
 fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEventsSlice: []const [2]T) std.ArrayList(T) {
     var l = std.ArrayList(T).init(allocator);
     for (seqEventsSlice) |es| {

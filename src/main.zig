@@ -141,16 +141,18 @@ pub fn main() !void {
 
     // TODO - why all these @constCasts?
     var metroTrack = midilib.Track.init(allocator, @constCast(&[_]*midilib.Pattern{ &testPattern, &testPattern2, &testPattern3 }), 9);
+    metroTrack.muted = true;
     var melodyTrack = midilib.Track.init(allocator, @constCast(&[_]*midilib.Pattern{&melodyPattern}), 0);
     melodyTrack.muted = true;
     var bassTrack = midilib.Track.init(allocator, @constCast(&[_]*midilib.Pattern{ &bassPattern, &bassPattern2 }), 0);
-    bassTrack.muted = false;
+    bassTrack.muted = true;
+
+    var debugTrack = midilib.Track.init(allocator, @constCast(&[_]*midilib.Pattern{@constCast(&midilib.Pattern.initWithRelNotes(allocator, &testPatterns.singleNote, metro.midiPPQ, 0))}), 0);
+
     var inputTrack = midilib.Track.init(allocator, @constCast(&[_]*midilib.Pattern{&inputPattern}), 0);
 
-    bassPattern.patternOffset = 0;
-    testPattern.patternOffset = 0;
-    melodyPattern.patternOffset = 0;
     metro.tracks = ([_]*midilib.Track{
+        &debugTrack,
         &metroTrack,
         &bassTrack,
         &melodyTrack,
