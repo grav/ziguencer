@@ -38,10 +38,10 @@ Usually it's a matter of running `brew install portmidi notcurses` or similar on
 
 ### Starting
 
-First build the binary:
+First build the binary, specifying the target platform, eg Mac:
 
 ```bash
-zig build
+zig build -Dmac
 ```
 
 The run it:
