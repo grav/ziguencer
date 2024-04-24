@@ -383,7 +383,6 @@ pub const Sequencer = struct {
                 track.noteMap.clearAndFree();
             }
             // write queued events to midi device
-            _ = pm.Pm_Write(self.midiOut, &(self.outBuffer), @intCast(numEventsQueued));
             // check if we need to shift patternOffset
             const pattern = track.currentPattern;
             const patternLength = tickToTimestamp(pattern.patternLengthTicks, self.midiPPQ, self.threadTempo);
@@ -395,7 +394,9 @@ pub const Sequencer = struct {
                 track.currentPattern.*.patternOffset = patternEnd;
             }
         }
-
+        if (numEventsQueued > 0) {
+            _ = pm.Pm_Write(self.midiOut, &(self.outBuffer), @intCast(numEventsQueued));
+        }
         return numEventsQueued;
     }
 };
