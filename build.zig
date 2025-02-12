@@ -12,7 +12,7 @@ pub fn build(b: *std.Build) void {
 
     var exe = b.addExecutable(.{
         .name = "ziguencer",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = .{ .cwd_relative = "src/main.zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -33,7 +33,7 @@ pub fn build(b: *std.Build) void {
 
         // exe.addLibraryPath(.{ .path = "rpi" });
     } else {
-        // exe.addLibraryPath(.{ .path = "../portmidi" });
+        // exe.addLibraryPath(.{ .cwd_relative = "../portmidi" });
     }
 
     // if (vcpkg) {
@@ -46,16 +46,16 @@ pub fn build(b: *std.Build) void {
     // important
     // exe.addLibraryPath(.{ .path = "/opt/homebrew/lib" });
     if (pi) {
-        exe.addIncludePath(.{ .path = "raspberry_pi_deps/include" });
-        exe.addObjectFile(.{ .path = "raspberry_pi_deps/libportmidi.so" });
-        exe.addObjectFile(.{ .path = "raspberry_pi_deps/libnotcurses-core.so" });
-        exe.addObjectFile(.{ .path = "raspberry_pi_deps/libnotcurses-ffi.so" });
-        exe.addObjectFile(.{ .path = "raspberry_pi_deps/libnotcurses.so" });
+        exe.addIncludePath(.{ .cwd_relative = "raspberry_pi_deps/include" });
+        exe.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libportmidi.so" });
+        exe.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libnotcurses-core.so" });
+        exe.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libnotcurses-ffi.so" });
+        exe.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libnotcurses.so" });
     } else if (mac) {
-        exe.addIncludePath(.{ .path = "/opt/homebrew/include" });
-        exe.addObjectFile(.{ .path = "/opt/homebrew/lib/libportmidi.dylib" });
+        exe.addIncludePath(.{ .cwd_relative = "/opt/homebrew/include" });
+        exe.addObjectFile(.{ .cwd_relative = "/opt/homebrew/lib/libportmidi.dylib" });
         // `-core` is important ...
-        exe.addObjectFile(.{ .path = "/opt/homebrew/lib/libnotcurses-core.dylib" });
+        exe.addObjectFile(.{ .cwd_relative = "/opt/homebrew/lib/libnotcurses-core.dylib" });
     } else {
         // linux - at least x86
         exe.linkSystemLibrary("portmidi");
