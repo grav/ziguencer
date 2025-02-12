@@ -22,7 +22,7 @@ pub const PmTimeProcPtr = ?fn (?*anyopaque) callconv(.C) pm.PmTimestamp;
 
 const maxEvents = 100;
 
-var random: std.rand.Random = undefined;
+// var random: std.rand.Random = undefined;
 
 fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEventsSlice: []const [2]T) std.ArrayList(T) {
     var l = std.ArrayList(T).init(allocator);
@@ -45,8 +45,8 @@ pub fn main() !void {
     defer argsMap.deinit();
     lib.parseArgsToMap(&args, &argsMap);
 
-    var tt = std.rand.DefaultPrng.init(@intCast(std.time.milliTimestamp()));
-    random = tt.random();
+    // var tt = std.rand.DefaultPrng.init(@intCast(std.time.milliTimestamp()));
+    // random = tt.random();
 
     var metro = midilib.Sequencer{
         .midiPPQ = 1120,
