@@ -1,4 +1,4 @@
-pub usingnamespace @cImport({
+pub const pm = @cImport({
     @cInclude("portmidi.h");
     @cInclude("porttime.h");
     @cInclude("pmutil.h");

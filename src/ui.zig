@@ -1,5 +1,5 @@
 const std = @import("std");
-const nc = @import("notcurses.zig");
+const nc = @import("notcurses.zig").nc;
 const midilib = @import("midilib.zig");
 const pm = @import("portmidi.zig");
 const lib = @import("lib.zig");

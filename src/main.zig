@@ -2,7 +2,7 @@
 // todo - test midi input
 
 const std = @import("std");
-const pm = @import("portmidi.zig");
+const pm = @import("portmidi.zig").pm;
 const lib = @import("lib.zig");
 const dp = lib.dp;
 const midilib = @import("midilib.zig");

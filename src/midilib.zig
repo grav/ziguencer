@@ -1,4 +1,4 @@
-const pm = @import("portmidi.zig");
+const pm = @import("portmidi.zig").pm;
 const std = @import("std");
 const lib = @import("lib.zig");
 const dp = lib.dp;
@@ -199,7 +199,7 @@ pub const Msg = struct {
     note: i32 = 0,
 };
 
-fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.C) void {
+fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.c) void {
     if (userData) |_userData| {
         var metro: *Sequencer = @alignCast(@ptrCast(_userData));
         var result: pm.PmError = pm.pmNoError;
@@ -327,8 +327,8 @@ pub const Sequencer = struct {
     outBuffer: [maxEvents]pm.PmEvent = undefined,
     midiOut: ?*pm.PmStream = null,
     midiIn: ?*pm.PmStream = null,
-
-    callback: ?*const fn (i32, ?*anyopaque) callconv(.C) void = processMidi,
+    // see https://ziglang.org/download/0.14.0/release-notes.html#Calling-Convention-Enhancements-and-setAlignStack-Replaced
+    callback: ?*const fn (i32, ?*anyopaque) callconv(.c) void = processMidi,
 
     pub fn queueEvents(self: *Self, timestamp: pm.PmTimestamp) usize {
         // if we've been triggered too early, do nothing

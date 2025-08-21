@@ -1,7 +1,7 @@
 // zig build-exe -I/opt/homebrew/Cellar/portmidi/2.0.4_1/include -L/opt/homebrew/Cellar/portmidi/2.0.4_1/lib -lportmidi src/lib.zig && ./lib
 
 const std = @import("std");
-const pm = @import("portmidi.zig");
+const pm = @import("portmidi.zig").pm;
 
 pub fn dp(comptime fmt: []const u8, args: anytype) void {
     _ = args;
