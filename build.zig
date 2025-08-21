@@ -12,9 +12,12 @@ pub fn build(b: *std.Build) void {
 
     var exe = b.addExecutable(.{
         .name = "ziguencer",
-        .root_source_file = .{ .cwd_relative = "src/main.zig" },
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = .{ .cwd_relative = "src/main.zig" },
+
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     // exe.addCSourceFile("stb_image-2.22/stb_image_impl.c", &[_][]const u8{"-std=c99"});
     //exe.setBuildMode(mode);
