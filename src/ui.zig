@@ -1,7 +1,9 @@
 const std = @import("std");
-const nc = @import("notcurses.zig");
+const notcurses = @import("notcurses.zig");
+const nc = notcurses.nc;
 const midilib = @import("midilib.zig");
-const pm = @import("portmidi.zig");
+const portmidi = @import("portmidi.zig");
+const pm = portmidi.pm;
 const lib = @import("lib.zig");
 const lp = @import("launchpad.zig");
 const posix = @cImport({
@@ -13,7 +15,7 @@ const shiftNumKeys = [_]u8{ '!', '@', '#', '$', '%', '^', '7', '8', '9', '0' }; 
 const numKeys = [_]u8{ '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
 
 pub fn init_nc() *nc.notcurses {
-    var nc_opts: nc.notcurses_options = nc.default_notcurses_options;
+    var nc_opts: nc.notcurses_options = notcurses.default_notcurses_options;
     const ncs: *nc.notcurses = (nc.notcurses_core_init(&nc_opts, null) orelse @panic("notcurses_core_init() failed"));
     return ncs;
 }
@@ -25,30 +27,30 @@ pub fn create_nc_root_plane(ncs: *nc.notcurses) *nc.ncplane {
     dimx = @max(dimx, 80);
     dimy = @max(dimy, 25);
     var std_chan: u64 = 0;
-    nc.err(nc.ncchannels_set_bg_rgb(&std_chan, 0)) catch unreachable;
-    nc.err(nc.ncplane_set_base(n, " ", 0, std_chan)) catch unreachable;
+    notcurses.err(nc.ncchannels_set_bg_rgb(&std_chan, 0)) catch unreachable;
+    notcurses.err(nc.ncplane_set_base(n, " ", 0, std_chan)) catch unreachable;
     return n;
 }
 
 pub fn create_nc_plane(parentPlane: *nc.ncplane) *nc.ncplane {
 
     // make box planes
-    var opts = nc.default_ncplane_options;
+    var opts = notcurses.default_ncplane_options;
     opts.rows = 1;
     opts.cols = 1;
     const plane = nc.ncplane_create(parentPlane, &opts) orelse unreachable;
-    nc.err(nc.ncplane_move_yx(plane, 1, 1)) catch unreachable;
-    nc.err(nc.ncplane_resize_simple(plane, 25, 35)) catch unreachable;
+    notcurses.err(nc.ncplane_move_yx(plane, 1, 1)) catch unreachable;
+    notcurses.err(nc.ncplane_resize_simple(plane, 25, 35)) catch unreachable;
     return plane;
 }
 
 pub fn updatePlane(allocator: std.mem.Allocator, plane: *nc.ncplane, metro: *midilib.Sequencer) !void {
     nc.ncplane_erase(plane);
-    try nc.err(nc.ncplane_cursor_move_yx(plane, 0, 0));
+    try notcurses.err(nc.ncplane_cursor_move_yx(plane, 0, 0));
     var chans: u64 = 0;
-    try nc.err(nc.ncchannels_set_bg_rgb(&chans, 0));
-    try nc.err(nc.ncchannels_set_bg_alpha(&chans, nc.NCALPHA_BLEND));
-    try nc.err(nc.ncplane_set_base(plane, " ", 0, chans));
+    try notcurses.err(nc.ncchannels_set_bg_rgb(&chans, 0));
+    try notcurses.err(nc.ncchannels_set_bg_alpha(&chans, nc.NCALPHA_BLEND));
+    try notcurses.err(nc.ncplane_set_base(plane, " ", 0, chans));
     _ = nc.ncplane_rounded_box(plane, 0, 0, nc.ncplane_dim_y(plane) - 1, nc.ncplane_dim_x(plane) - 1, 0);
 
     for (0.., metro.tracks[0..]) |i, t| {
@@ -120,7 +122,7 @@ pub fn runloop(allocator: std.mem.Allocator, legacyInputHandling: bool, ncs: *nc
                 updateLaunchpad(metro, lpM);
             }
 
-            try nc.err(nc.notcurses_render(ncs));
+            try notcurses.err(nc.notcurses_render(ncs));
             _ = posix.usleep(@divTrunc(1.0e6, 60));
 
             var nci: nc.ncinput = undefined;

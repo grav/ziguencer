@@ -1,7 +1,7 @@
 // zig build-exe -I/opt/homebrew/Cellar/portmidi/2.0.4_1/include -L/opt/homebrew/Cellar/portmidi/2.0.4_1/lib -lportmidi src/lib.zig && ./lib
 
 const std = @import("std");
-const pm = @import("portmidi.zig");
+const pm = @import("portmidi.zig").pm;
 
 pub fn dp(comptime fmt: []const u8, args: anytype) void {
     _ = args;
@@ -11,18 +11,18 @@ pub fn dp(comptime fmt: []const u8, args: anytype) void {
 }
 
 pub fn parseArgs(allocator: std.mem.Allocator, args: *std.process.ArgIterator) ![]i32 {
-    var l = std.ArrayList(i32).init(allocator);
+    var l = std.ArrayList(i32){};
     _ = args.skip();
     var n = args.next();
     while (n != null) {
         const i = std.fmt.parseInt(i32, n.?, 10) catch {
             std.debug.print("Warning: couldn't parse '{s}' as integer\n", .{n.?});
-            return l.toOwnedSlice();
+            return l.toOwnedSlice(allocator);
         };
-        try l.append(i);
+        try l.append(allocator, i);
         n = args.next();
     }
-    return l.toOwnedSlice();
+    return l.toOwnedSlice(allocator);
 }
 
 // parse command line args into a map, expecing `[key] [value]` pairs.

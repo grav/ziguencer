@@ -1,6 +1,6 @@
 const std = @import("std");
 const midilib = @import("midilib.zig");
-const pm = @import("portmidi.zig");
+const pm = @import("portmidi.zig").pm;
 const lib = @import("lib.zig");
 const posix = @cImport({
     @cInclude("unistd.h");

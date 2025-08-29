@@ -1,4 +1,4 @@
-const pm = @import("portmidi.zig");
+const pm = @import("portmidi.zig").pm;
 const std = @import("std");
 const lib = @import("lib.zig");
 const dp = lib.dp;
@@ -65,10 +65,10 @@ pub const Pattern = struct {
     allocator: std.mem.Allocator = undefined,
 
     fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEventsSlice: []const [2]T) std.ArrayList(T) {
-        var l = std.ArrayList(T).init(allocator);
+        var l = std.ArrayList(T){};
         for (seqEventsSlice) |es| {
-            l.append(es[0]) catch unreachable;
-            l.append(es[1]) catch unreachable;
+            l.append(allocator, es[0]) catch unreachable;
+            l.append(allocator, es[1]) catch unreachable;
         }
         return l;
     }
@@ -199,7 +199,7 @@ pub const Msg = struct {
     note: i32 = 0,
 };
 
-fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.C) void {
+fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.c) void {
     if (userData) |_userData| {
         var metro: *Sequencer = @alignCast(@ptrCast(_userData));
         var result: pm.PmError = pm.pmNoError;
@@ -263,8 +263,8 @@ fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.C) vo
                             // std.debug.print("remove: {}\n", .{x});
                         } else {
                             // add
-                            t.currentPattern.events.append(notes[0]) catch unreachable;
-                            t.currentPattern.events.append(notes[1]) catch unreachable;
+                            t.currentPattern.events.append(t.currentPattern.allocator, notes[0]) catch unreachable;
+                            t.currentPattern.events.append(t.currentPattern.allocator, notes[1]) catch unreachable;
                         }
                     },
                 }
@@ -298,8 +298,8 @@ fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.C) vo
                 const noteOffMsg = SeqEvent.getNoteOffMsg(alteredNoteOn.msg);
                 const tick = timestampToTickGivenOffset(timestamp, inputTrack.currentPattern.patternOffset, metro.midiPPQ, 120);
 
-                inputTrack.currentPattern.events.append(alteredNoteOn) catch unreachable;
-                inputTrack.currentPattern.events.append(SeqEvent.init(tick, noteOffMsg)) catch unreachable;
+                inputTrack.currentPattern.events.append(inputTrack.currentPattern.allocator, alteredNoteOn) catch unreachable;
+                inputTrack.currentPattern.events.append(inputTrack.currentPattern.allocator, SeqEvent.init(tick, noteOffMsg)) catch unreachable;
             } else {
                 std.debug.print("Unknown message\n", .{});
             }
@@ -327,8 +327,8 @@ pub const Sequencer = struct {
     outBuffer: [maxEvents]pm.PmEvent = undefined,
     midiOut: ?*pm.PmStream = null,
     midiIn: ?*pm.PmStream = null,
-
-    callback: ?*const fn (i32, ?*anyopaque) callconv(.C) void = processMidi,
+    // see https://ziglang.org/download/0.14.0/release-notes.html#Calling-Convention-Enhancements-and-setAlignStack-Replaced
+    callback: ?*const fn (i32, ?*anyopaque) callconv(.c) void = processMidi,
 
     pub fn queueEvents(self: *Self, timestamp: pm.PmTimestamp) usize {
         // if we've been triggered too early, do nothing

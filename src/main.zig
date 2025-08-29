@@ -2,11 +2,12 @@
 // todo - test midi input
 
 const std = @import("std");
-const pm = @import("portmidi.zig");
+const portmidi = @import("portmidi.zig");
+const pm = portmidi.pm;
 const lib = @import("lib.zig");
 const dp = lib.dp;
 const midilib = @import("midilib.zig");
-const nc = @import("notcurses.zig");
+const nc = @import("notcurses.zig").nc;
 const testPatterns = @import("testpatterns.zig");
 const ui = @import("ui.zig");
 const lp = @import("launchpad.zig");
@@ -16,7 +17,7 @@ const posix = @cImport({
 
 const SeqEvent = midilib.SeqEvent;
 
-pub const PmTimeProcPtr = ?fn (?*anyopaque) callconv(.C) pm.PmTimestamp;
+pub const PmTimeProcPtr = ?fn (?*anyopaque) callconv(.C) portmidi.PmTimestamp;
 
 // legacy - not to be used
 
@@ -25,10 +26,10 @@ const maxEvents = 100;
 // var random: std.rand.Random = undefined;
 
 fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEventsSlice: []const [2]T) std.ArrayList(T) {
-    var l = std.ArrayList(T).init(allocator);
+    var l = std.ArrayList(T){};
     for (seqEventsSlice) |es| {
-        l.append(es[0]) catch unreachable;
-        l.append(es[1]) catch unreachable;
+        l.append(allocator, es[0]) catch unreachable;
+        l.append(allocator, es[1]) catch unreachable;
     }
     return l;
 }
