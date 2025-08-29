@@ -6,7 +6,7 @@ const pm = @import("portmidi.zig");
 const lib = @import("lib.zig");
 const dp = lib.dp;
 const midilib = @import("midilib.zig");
-const nc = @import("notcurses.zig");
+const nc = @import("notcurses.zig").nc;
 const testPatterns = @import("testpatterns.zig");
 const ui = @import("ui.zig");
 const lp = @import("launchpad.zig");
@@ -192,7 +192,7 @@ pub fn main() !void {
     // make sure the first note will play
     metro.mainToMidi = pm.pm.Pm_QueueCreate(32, @sizeOf(midilib.Msg)) orelse unreachable;
     const ncs = ui.init_nc();
-    defer _ = nc.nc.notcurses_stop(ncs);
+    defer _ = nc.notcurses_stop(ncs);
 
     const root_plane = ui.create_nc_root_plane(ncs);
     const plane = ui.create_nc_plane(root_plane);
