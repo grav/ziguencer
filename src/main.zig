@@ -2,7 +2,7 @@
 // todo - test midi input
 
 const std = @import("std");
-const pm = @import("portmidi.zig").pm;
+const pm = @import("portmidi.zig");
 const lib = @import("lib.zig");
 const dp = lib.dp;
 const midilib = @import("midilib.zig");
@@ -25,10 +25,10 @@ const maxEvents = 100;
 // var random: std.rand.Random = undefined;
 
 fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEventsSlice: []const [2]T) std.ArrayList(T) {
-    var l = std.ArrayList(T).init(allocator);
+    var l = std.ArrayList(T){};
     for (seqEventsSlice) |es| {
-        l.append(es[0]) catch unreachable;
-        l.append(es[1]) catch unreachable;
+        l.append(allocator, es[0]) catch unreachable;
+        l.append(allocator, es[1]) catch unreachable;
     }
     return l;
 }
@@ -158,26 +158,26 @@ pub fn main() !void {
     })[0..];
 
     // // *** HERE BE MIDI STUFF ***
-    _ = pm.Pm_Initialize();
-    defer _ = pm.Pm_Terminate();
+    _ = pm.pm.Pm_Initialize();
+    defer _ = pm.pm.Pm_Terminate();
     const msPerCall = 5;
-    _ = pm.Pt_Start(msPerCall, metro.callback, &metro);
+    _ = pm.pm.Pt_Start(msPerCall, metro.callback, &metro);
     //latency: http://portmedia.sourceforge.net/portmidi/doxygen/group__grp__device.html
     const latency = 1;
-    _ = pm.Pm_OpenOutput(&(metro.midiOut), out, null, 0, null, null, latency);
+    _ = pm.pm.Pm_OpenOutput(&(metro.midiOut), out, null, 0, null, null, latency);
     if (metro.midiOut == null) {
         std.debug.print("Failed to start midi!\n", .{});
         std.process.exit(1);
     }
-    defer _ = pm.Pm_Close(metro.midiOut);
+    defer _ = pm.pm.Pm_Close(metro.midiOut);
     if (in >= 0) {
-        _ = pm.Pm_OpenInput(&(metro.midiIn), in, null, 0, null, null);
+        _ = pm.pm.Pm_OpenInput(&(metro.midiIn), in, null, 0, null, null);
         if (metro.midiIn == null) {
             std.debug.print("Failed to start midi!\n", .{});
             std.process.exit(1);
         }
     }
-    defer _ = pm.Pm_Close(metro.midiIn);
+    defer _ = pm.pm.Pm_Close(metro.midiIn);
 
     var lpMatrix: ?*lp.Launchpad = null;
 
@@ -190,9 +190,9 @@ pub fn main() !void {
     // TODO - how to deinit an optional?
 
     // make sure the first note will play
-    metro.mainToMidi = pm.Pm_QueueCreate(32, @sizeOf(midilib.Msg)) orelse unreachable;
+    metro.mainToMidi = pm.pm.Pm_QueueCreate(32, @sizeOf(midilib.Msg)) orelse unreachable;
     const ncs = ui.init_nc();
-    defer _ = nc.notcurses_stop(ncs);
+    defer _ = nc.nc.notcurses_stop(ncs);
 
     const root_plane = ui.create_nc_root_plane(ncs);
     const plane = ui.create_nc_plane(root_plane);

@@ -12,9 +12,8 @@ pub fn build(b: *std.Build) void {
 
     var exe = b.addExecutable(.{
         .name = "ziguencer",
-        .root_module = b.createModule(.{
-            .root_source_file = .{ .cwd_relative = "src/main.zig" },
-
+        .root_module = b.addModule("ziguencer", .{
+            .root_source_file = b.path("src/main.zig"),
             .target = target,
             .optimize = optimize,
         }),

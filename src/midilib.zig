@@ -65,10 +65,10 @@ pub const Pattern = struct {
     allocator: std.mem.Allocator = undefined,
 
     fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEventsSlice: []const [2]T) std.ArrayList(T) {
-        var l = std.ArrayList(T).init(allocator);
+        var l = std.ArrayList(T){};
         for (seqEventsSlice) |es| {
-            l.append(es[0]) catch unreachable;
-            l.append(es[1]) catch unreachable;
+            l.append(allocator, es[0]) catch unreachable;
+            l.append(allocator, es[1]) catch unreachable;
         }
         return l;
     }
@@ -263,8 +263,8 @@ fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.c) vo
                             // std.debug.print("remove: {}\n", .{x});
                         } else {
                             // add
-                            t.currentPattern.events.append(notes[0]) catch unreachable;
-                            t.currentPattern.events.append(notes[1]) catch unreachable;
+                            t.currentPattern.events.append(t.currentPattern.allocator, notes[0]) catch unreachable;
+                            t.currentPattern.events.append(t.currentPattern.allocator, notes[1]) catch unreachable;
                         }
                     },
                 }
@@ -298,8 +298,8 @@ fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.c) vo
                 const noteOffMsg = SeqEvent.getNoteOffMsg(alteredNoteOn.msg);
                 const tick = timestampToTickGivenOffset(timestamp, inputTrack.currentPattern.patternOffset, metro.midiPPQ, 120);
 
-                inputTrack.currentPattern.events.append(alteredNoteOn) catch unreachable;
-                inputTrack.currentPattern.events.append(SeqEvent.init(tick, noteOffMsg)) catch unreachable;
+                inputTrack.currentPattern.events.append(inputTrack.currentPattern.allocator, alteredNoteOn) catch unreachable;
+                inputTrack.currentPattern.events.append(inputTrack.currentPattern.allocator, SeqEvent.init(tick, noteOffMsg)) catch unreachable;
             } else {
                 std.debug.print("Unknown message\n", .{});
             }
