@@ -10,7 +10,6 @@ const c = @cImport({
 
 const std = @import("std");
 
-// pub usingnamespace c;
 pub const nc = c;
 pub const default_notcurses_options = c.notcurses_options{
     .termtype = null,
