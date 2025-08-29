@@ -2,7 +2,8 @@
 // todo - test midi input
 
 const std = @import("std");
-const pm = @import("portmidi.zig");
+const portmidi = @import("portmidi.zig");
+const pm = portmidi.pm;
 const lib = @import("lib.zig");
 const dp = lib.dp;
 const midilib = @import("midilib.zig");
@@ -16,7 +17,7 @@ const posix = @cImport({
 
 const SeqEvent = midilib.SeqEvent;
 
-pub const PmTimeProcPtr = ?fn (?*anyopaque) callconv(.C) pm.PmTimestamp;
+pub const PmTimeProcPtr = ?fn (?*anyopaque) callconv(.C) portmidi.PmTimestamp;
 
 // legacy - not to be used
 
@@ -158,26 +159,26 @@ pub fn main() !void {
     })[0..];
 
     // // *** HERE BE MIDI STUFF ***
-    _ = pm.pm.Pm_Initialize();
-    defer _ = pm.pm.Pm_Terminate();
+    _ = pm.Pm_Initialize();
+    defer _ = pm.Pm_Terminate();
     const msPerCall = 5;
-    _ = pm.pm.Pt_Start(msPerCall, metro.callback, &metro);
+    _ = pm.Pt_Start(msPerCall, metro.callback, &metro);
     //latency: http://portmedia.sourceforge.net/portmidi/doxygen/group__grp__device.html
     const latency = 1;
-    _ = pm.pm.Pm_OpenOutput(&(metro.midiOut), out, null, 0, null, null, latency);
+    _ = pm.Pm_OpenOutput(&(metro.midiOut), out, null, 0, null, null, latency);
     if (metro.midiOut == null) {
         std.debug.print("Failed to start midi!\n", .{});
         std.process.exit(1);
     }
-    defer _ = pm.pm.Pm_Close(metro.midiOut);
+    defer _ = pm.Pm_Close(metro.midiOut);
     if (in >= 0) {
-        _ = pm.pm.Pm_OpenInput(&(metro.midiIn), in, null, 0, null, null);
+        _ = pm.Pm_OpenInput(&(metro.midiIn), in, null, 0, null, null);
         if (metro.midiIn == null) {
             std.debug.print("Failed to start midi!\n", .{});
             std.process.exit(1);
         }
     }
-    defer _ = pm.pm.Pm_Close(metro.midiIn);
+    defer _ = pm.Pm_Close(metro.midiIn);
 
     var lpMatrix: ?*lp.Launchpad = null;
 
@@ -190,7 +191,7 @@ pub fn main() !void {
     // TODO - how to deinit an optional?
 
     // make sure the first note will play
-    metro.mainToMidi = pm.pm.Pm_QueueCreate(32, @sizeOf(midilib.Msg)) orelse unreachable;
+    metro.mainToMidi = pm.Pm_QueueCreate(32, @sizeOf(midilib.Msg)) orelse unreachable;
     const ncs = ui.init_nc();
     defer _ = nc.notcurses_stop(ncs);
 

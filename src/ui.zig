@@ -2,7 +2,8 @@ const std = @import("std");
 const notcurses = @import("notcurses.zig");
 const nc = notcurses.nc;
 const midilib = @import("midilib.zig");
-const pm = @import("portmidi.zig");
+const portmidi = @import("portmidi.zig");
+const pm = portmidi.pm;
 const lib = @import("lib.zig");
 const lp = @import("launchpad.zig");
 const posix = @cImport({
@@ -71,8 +72,8 @@ pub fn updatePlane(allocator: std.mem.Allocator, plane: *nc.ncplane, metro: *mid
 }
 
 pub fn updateLaunchpad(seq: *midilib.Sequencer, launchpad: *lp.Launchpad) void {
-    var matrix: [lp.nCells]pm.pm.PmMessage = undefined;
-    var ctrls: [lp.nCtrls]pm.pm.PmMessage = undefined;
+    var matrix: [lp.nCells]pm.PmMessage = undefined;
+    var ctrls: [lp.nCtrls]pm.PmMessage = undefined;
     if (launchpad.ctrlPressed(lp.Ctrl.mixer)) {
         lp.seqStateToMatrixMessages(&matrix, seq, launchpad);
     } else {
@@ -84,7 +85,7 @@ pub fn updateLaunchpad(seq: *midilib.Sequencer, launchpad: *lp.Launchpad) void {
             launchpad.uiState.yOffset,
         );
     }
-    ctrls = [_]pm.pm.PmMessage{
+    ctrls = [_]pm.PmMessage{
         lp.ColorNone,
         lp.ColorNone,
         lp.ColorNone,
@@ -104,10 +105,10 @@ pub fn updateLaunchpad(seq: *midilib.Sequencer, launchpad: *lp.Launchpad) void {
     };
     _ = launchpad.update(&matrix, &ctrls);
 
-    const result = pm.pm.Pm_Poll(launchpad.midiInput);
+    const result = pm.Pm_Poll(launchpad.midiInput);
     if (result > 0) {
-        var buffer: pm.pm.PmEvent = undefined;
-        _ = pm.pm.Pm_Read(launchpad.midiInput, &buffer, 1);
+        var buffer: pm.PmEvent = undefined;
+        _ = pm.Pm_Read(launchpad.midiInput, &buffer, 1);
         launchpad.keyPressed(seq, buffer.message);
     }
 }
@@ -147,7 +148,7 @@ pub fn runloop(allocator: std.mem.Allocator, legacyInputHandling: bool, ncs: *nc
                     };
                 }
                 if (msg) |_| {
-                    _ = pm.pm.Pm_Enqueue(metro.mainToMidi, &msg);
+                    _ = pm.Pm_Enqueue(metro.mainToMidi, &msg);
                 }
             } else if (legacyInputHandling) {
                 if (lib.indexOf(u8, &numKeys, @as(u8, @intCast(keypress))) catch null) |trackNum| {
@@ -163,7 +164,7 @@ pub fn runloop(allocator: std.mem.Allocator, legacyInputHandling: bool, ncs: *nc
                 }
 
                 if (msg) |_| {
-                    _ = pm.pm.Pm_Enqueue(metro.mainToMidi, &msg);
+                    _ = pm.Pm_Enqueue(metro.mainToMidi, &msg);
                 }
             }
             // debug keyboard state
