@@ -4,23 +4,22 @@
 // zig build-exe src/notcurses.zig -I/opt/homebrew/Cellar/notcurses/3.0.9_2/include -L/opt/homebrew/Cellar/notcurses/3.0.9_2/lib -lnotcurses -lnotcurses-core -lc
 //
 
-const c = @cImport({
+pub const nc = @cImport({
     @cInclude("notcurses/notcurses.h");
 });
 
 const std = @import("std");
 
-pub const nc = c;
-pub const default_notcurses_options = c.notcurses_options{
+pub const default_notcurses_options = nc.notcurses_options{
     .termtype = null,
-    .loglevel = c.NCLOGLEVEL_SILENT,
+    .loglevel = nc.NCLOGLEVEL_SILENT,
     .margin_t = 0,
     .margin_r = 0,
     .margin_b = 0,
     .margin_l = 0,
     .flags = 0,
 };
-pub const default_ncplane_options = c.ncplane_options{
+pub const default_ncplane_options = nc.ncplane_options{
     .y = 0,
     .userptr = null,
     .name = null,
@@ -32,7 +31,7 @@ pub const default_ncplane_options = c.ncplane_options{
     .flags = 0,
     .resizecb = null,
 };
-const default_ncselector_options = c.ncselector_options{
+const default_ncselector_options = nc.ncselector_options{
     .footchannels = 0,
     .boxchannels = 0,
     .defidx = 0,
@@ -57,9 +56,9 @@ pub fn err(code: c_int) !void {
     }
 }
 
-pub fn init_nc() *c.notcurses {
-    var nc_opts: c.notcurses_options = default_notcurses_options;
-    const ncs: *c.notcurses = (c.notcurses_core_init(&nc_opts, null) orelse @panic("notcurses_core_init() failed"));
+pub fn init_nc() *nc.notcurses {
+    var nc_opts: nc.notcurses_options = default_notcurses_options;
+    const ncs: *nc.notcurses = (nc.notcurses_core_init(&nc_opts, null) orelse @panic("notcurses_core_init() failed"));
     return ncs;
 }
 
@@ -67,10 +66,10 @@ pub fn main() !void {
 
     // test input handling
     const ncs = init_nc();
-    defer _ = c.notcurses_stop(ncs);
-    var nci: c.ncinput = undefined;
+    defer _ = nc.notcurses_stop(ncs);
+    var nci: nc.ncinput = undefined;
     while (true) {
-        const keypress: c_uint = c.notcurses_get_blocking(ncs, &nci);
+        const keypress: c_uint = nc.notcurses_get_blocking(ncs, &nci);
         std.debug.print("keypress {any}\n", .{keypress});
         std.debug.print("nci {any}\n", .{nci});
     }
