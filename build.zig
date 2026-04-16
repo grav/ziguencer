@@ -48,22 +48,22 @@ pub fn build(b: *std.Build) void {
     // important
     // exe.addLibraryPath(.{ .path = "/opt/homebrew/lib" });
     if (pi) {
-        exe.addIncludePath(.{ .cwd_relative = "raspberry_pi_deps/include" });
-        exe.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libportmidi.so" });
-        exe.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libnotcurses-core.so" });
-        exe.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libnotcurses-ffi.so" });
-        exe.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libnotcurses.so" });
+        exe.root_module.addIncludePath(.{ .cwd_relative = "raspberry_pi_deps/include" });
+        exe.root_module.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libportmidi.so" });
+        exe.root_module.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libnotcurses-core.so" });
+        exe.root_module.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libnotcurses-ffi.so" });
+        exe.root_module.addObjectFile(.{ .cwd_relative = "raspberry_pi_deps/libnotcurses.so" });
     } else if (mac) {
-        exe.addIncludePath(.{ .cwd_relative = "/opt/homebrew/include" });
-        exe.addObjectFile(.{ .cwd_relative = "/opt/homebrew/lib/libportmidi.dylib" });
+        exe.root_module.addIncludePath(.{ .cwd_relative = "/opt/homebrew/include" });
+        exe.root_module.addObjectFile(.{ .cwd_relative = "/opt/homebrew/lib/libportmidi.dylib" });
         // `-core` is important ...
-        exe.addObjectFile(.{ .cwd_relative = "/opt/homebrew/lib/libnotcurses-core.dylib" });
+        exe.root_module.addObjectFile(.{ .cwd_relative = "/opt/homebrew/lib/libnotcurses-core.dylib" });
     } else {
         // linux - at least x86
-        exe.linkSystemLibrary("portmidi");
-        exe.linkSystemLibrary("notcurses");
+        exe.root_module.linkSystemLibrary("portmidi", .{});
+        exe.root_module.linkSystemLibrary("notcurses", .{});
     }
-    exe.linkSystemLibrary("c");
+    exe.root_module.linkSystemLibrary("c", .{});
     // exe.addLibraryPath(.{ .path = "/opt/homebrew/lib" });
 
     // exe.linkSystemLibrary("notcurses");

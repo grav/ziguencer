@@ -65,7 +65,7 @@ pub const Pattern = struct {
     allocator: std.mem.Allocator = undefined,
 
     fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEventsSlice: []const [2]T) std.ArrayList(T) {
-        var l = std.ArrayList(T){};
+        var l = std.ArrayList(T).empty;
         for (seqEventsSlice) |es| {
             l.append(allocator, es[0]) catch unreachable;
             l.append(allocator, es[1]) catch unreachable;
@@ -109,7 +109,7 @@ pub const Pattern = struct {
     }
 
     pub fn deinit(self: *Self) void {
-        self.events.deinit();
+        self.events.deinit(self.allocator);
     }
 };
 
@@ -201,7 +201,7 @@ pub const Msg = struct {
 
 fn processMidi(timestamp: pm.PmTimestamp, userData: ?*anyopaque) callconv(.c) void {
     if (userData) |_userData| {
-        var metro: *Sequencer = @alignCast(@ptrCast(_userData));
+        var metro: *Sequencer = @ptrCast(@alignCast(_userData));
         var result: pm.PmError = pm.pmNoError;
         var msg: Msg = undefined;
 

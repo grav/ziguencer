@@ -10,8 +10,8 @@ pub fn dp(comptime fmt: []const u8, args: anytype) void {
     // std.debug.print(fmt, args);
 }
 
-pub fn parseArgs(allocator: std.mem.Allocator, args: *std.process.ArgIterator) ![]i32 {
-    var l = std.ArrayList(i32){};
+pub fn parseArgs(allocator: std.mem.Allocator, args: *std.process.Args.Iterator) ![]i32 {
+    var l = std.ArrayList(i32).empty;
     _ = args.skip();
     var n = args.next();
     while (n != null) {
@@ -27,7 +27,7 @@ pub fn parseArgs(allocator: std.mem.Allocator, args: *std.process.ArgIterator) !
 
 // parse command line args into a map, expecing `[key] [value]` pairs.
 // any key with no value is ignored.
-pub fn parseArgsToMap(args: *std.process.ArgIterator, argsMap: *std.StringHashMap([]const u8)) void {
+pub fn parseArgsToMap(args: *std.process.Args.Iterator, argsMap: *std.StringHashMap([]const u8)) void {
     _ = args.next();
     var k = args.next();
     while (k) |k_| {
@@ -106,7 +106,8 @@ pub fn askUserForInteger() !i32 {
     }
 }
 
-pub fn main() !void {
+pub fn main(init: std.process.Init.Minimal) !void {
+    _ = init;
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
 

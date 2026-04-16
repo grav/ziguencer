@@ -81,7 +81,7 @@ pub const melody = [_]midilib.RelNote{
 };
 
 fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEventsSlice: []const [2]T) std.ArrayList(T) {
-    var l = std.ArrayList(T){};
+    var l = std.ArrayList(T).empty;
     for (seqEventsSlice) |es| {
         l.append(allocator, es[0]) catch unreachable;
         l.append(allocator, es[1]) catch unreachable;

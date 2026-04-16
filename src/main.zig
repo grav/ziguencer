@@ -26,7 +26,7 @@ const maxEvents = 100;
 // var random: std.rand.Random = undefined;
 
 fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEventsSlice: []const [2]T) std.ArrayList(T) {
-    var l = std.ArrayList(T){};
+    var l = std.ArrayList(T).empty;
     for (seqEventsSlice) |es| {
         l.append(allocator, es[0]) catch unreachable;
         l.append(allocator, es[1]) catch unreachable;
@@ -34,13 +34,13 @@ fn pairsSliceToArrayList(comptime T: type, allocator: std.mem.Allocator, seqEven
     return l;
 }
 
-pub fn main() !void {
+pub fn main(init: std.process.Init.Minimal) !void {
     lib.showDeviceInfo();
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
-    var args = try std.process.argsWithAllocator(allocator);
+    var args = init.args.iterate();
 
     var argsMap = std.StringHashMap([]const u8).init(allocator);
     defer argsMap.deinit();
