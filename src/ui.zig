@@ -6,9 +6,7 @@ const portmidi = @import("portmidi.zig");
 const pm = portmidi.pm;
 const lib = @import("lib.zig");
 const lp = @import("launchpad.zig");
-const posix = @cImport({
-    @cInclude("unistd.h");
-});
+const posix = @import("c");
 
 // figuring out what (shift+)numeric key was pressed
 const shiftNumKeys = [_]u8{ '!', '@', '#', '$', '%', '^', '7', '8', '9', '0' }; // US/UK!

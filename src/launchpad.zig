@@ -2,9 +2,7 @@ const std = @import("std");
 const midilib = @import("midilib.zig");
 const pm = @import("portmidi.zig").pm;
 const lib = @import("lib.zig");
-const posix = @cImport({
-    @cInclude("unistd.h");
-});
+const posix = @import("c");
 
 pub const ColorNone = 0b0000000;
 const ColorRedLow = 0b0000001;
@@ -40,7 +38,7 @@ pub const Ctrl = enum(pm.PmMessage) {
     arm = 8353936,
 };
 
-pub const fields = std.meta.fields(Ctrl);
+const ctrlValues = @typeInfo(Ctrl).@"enum".field_values;
 
 pub fn isKeyDown(msg: pm.PmMessage) bool {
     return msg & 0xFF0000 == 0x7F0000;
@@ -131,15 +129,15 @@ pub const Launchpad = struct {
     keyMap: std.AutoHashMap(pm.PmMessage, bool) = undefined,
 
     pub fn msgForField(i: usize) pm.PmMessage {
-        inline for (std.meta.fields(Ctrl), 0..) |f, j| {
-            if (j == i) return f.value;
+        inline for (ctrlValues, 0..) |value, j| {
+            if (j == i) return value;
         }
         unreachable;
     }
 
     pub fn isCtrl(k: pm.PmMessage) bool {
-        inline for (std.meta.fields(Ctrl)) |f| {
-            if (f.value == k) {
+        inline for (ctrlValues) |value| {
+            if (value == k) {
                 return true;
             }
         }
@@ -234,7 +232,7 @@ pub const Launchpad = struct {
     }
 
     pub fn ctrlPressed(self: *Self, k: Ctrl) bool {
-        return self.keyMap.get(@intFromEnum(k)) orelse false;
+        return self.keyMap.get(@backingInt(k)) orelse false;
     }
 
     pub fn debugKeyMap(self: *Self) void {
@@ -245,7 +243,7 @@ pub const Launchpad = struct {
             const k2 = e.key_ptr.*;
             var desc: [:0]const u8 = "?";
             if (isCtrl(k2)) {
-                const k3: Ctrl = @enumFromInt(k2);
+                const k3: Ctrl = @fromBackingInt(@intCast(k2));
                 desc = @tagName(k3);
             }
             std.debug.print("0x{x:0>6} ({s})\n", .{ e.key_ptr.*, desc });
@@ -267,7 +265,7 @@ pub const Launchpad = struct {
         self.keyMap.put(k, keyDown) catch unreachable;
         if (keyDown and isCtrl(k)) {
             // this is safe since we already checked with isCtrl
-            const c: Ctrl = @enumFromInt(k);
+            const c: Ctrl = @fromBackingInt(@intCast(k));
             if (self.noOtherKeysPressed(k)) {
                 switch (c) {
                     .arrowLeft => {
@@ -395,4 +393,15 @@ pub fn main() !void {
 
         _ = posix.usleep(delay);
     }
+}
+
+test "Launchpad controls map to their MIDI messages" {
+    // Top-row controls use CC; right-column controls use note-on messages.
+    try std.testing.expectEqual(@as(pm.PmMessage, 0x7F68B0), Launchpad.msgForField(0));
+    try std.testing.expectEqual(@as(pm.PmMessage, 0x7F6FB0), Launchpad.msgForField(7));
+    try std.testing.expectEqual(@as(pm.PmMessage, 0x7F0890), Launchpad.msgForField(8));
+    try std.testing.expectEqual(@as(pm.PmMessage, 0x7F7890), Launchpad.msgForField(15));
+    try std.testing.expect(Launchpad.isCtrl(0x7F68B0));
+    try std.testing.expect(Launchpad.isCtrl(0x7F7890));
+    try std.testing.expect(!Launchpad.isCtrl(0x7F0090)); // Matrix pad, not a control.
 }

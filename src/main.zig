@@ -11,13 +11,10 @@ const nc = @import("notcurses.zig").nc;
 const testPatterns = @import("testpatterns.zig");
 const ui = @import("ui.zig");
 const lp = @import("launchpad.zig");
-const posix = @cImport({
-    @cInclude("unistd.h");
-});
 
 const SeqEvent = midilib.SeqEvent;
 
-pub const PmTimeProcPtr = ?fn (?*anyopaque) callconv(.C) portmidi.PmTimestamp;
+pub const PmTimeProcPtr = ?fn (?*anyopaque) callconv(.c) pm.PmTimestamp;
 
 // legacy - not to be used
 
@@ -202,3 +199,7 @@ pub fn main(init: std.process.Init.Minimal) !void {
 
 // read from the midi in device:
 //https://github.com/PortMidi/portmidi/blob/master/pm_test/midithru.c#L171C17-L171C57
+
+test {
+    _ = lp;
+}

@@ -1,5 +1,4 @@
 const std = @import("std");
-const Builder = std.build.Builder;
 
 pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
@@ -18,6 +17,22 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
         }),
     });
+    const bindings = b.addTranslateC(.{
+        .root_source_file = b.path("src/bindings.h"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    if (pi) {
+        bindings.addIncludePath(b.path("raspberry_pi_deps/include"));
+    } else if (mac) {
+        bindings.addIncludePath(.{ .cwd_relative = "/opt/homebrew/include" });
+    } else {
+        bindings.linkSystemLibrary("portmidi", .{});
+        bindings.linkSystemLibrary("notcurses", .{});
+    }
+    exe.root_module.addImport("c", bindings.createModule());
+
     // exe.addCSourceFile("stb_image-2.22/stb_image_impl.c", &[_][]const u8{"-std=c99"});
     //exe.setBuildMode(mode);
 
@@ -71,6 +86,10 @@ pub fn build(b: *std.Build) void {
     // exe.linkSystemLibrary("glfw");
     // exe.linkSystemLibrary("epoxy");
     b.installArtifact(exe);
+
+    const tests = b.addTest(.{ .root_module = exe.root_module });
+    const run_tests = b.addRunArtifact(tests);
+    b.step("test", "Run tests without MIDI hardware").dependOn(&run_tests.step);
 
     // const play = b.step("play", "Play the game");
     const run = b.addRunArtifact(exe);

@@ -1,12 +1,8 @@
 // Nicked from https://github.com/dundalek/notcurses-zig-example/blob/master/src/notcurses.zig
 
-// To run this file as standalone:
-// zig build-exe src/notcurses.zig -I/opt/homebrew/Cellar/notcurses/3.0.9_2/include -L/opt/homebrew/Cellar/notcurses/3.0.9_2/lib -lnotcurses -lnotcurses-core -lc
-//
+// C bindings are supplied by build.zig.
 
-pub const nc = @cImport({
-    @cInclude("notcurses/notcurses.h");
-});
+pub const nc = @import("c");
 
 const std = @import("std");
 

@@ -32,6 +32,8 @@ with fewer footguns than C, and a couple of awesome features as a bonus. For ins
 ## Usage
 
 ### Prerequisites
+Zig 0.17.0 is required. C bindings are generated from the installed library headers during the build.
+
 The libraries `portmidi` and `notcurses` need to be installed and available.
 
 Usually it's a matter of running `brew install portmidi notcurses` or similar on your platform.
@@ -44,7 +46,12 @@ First build the binary, specifying the target platform, eg Mac:
 zig build -Dmac
 ```
 
-The run it:
+Run the tests (no MIDI hardware needed):
+```bash
+zig build test -Dmac
+```
+
+Then run it:
 ```bash
 ./zig-out/bin/ziguencer 
 ```
